@@ -19,19 +19,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.esa.suhet</groupId>
-    <artifactId>suhet</artifactId>
+    <groupId>org.esa.s3tbx</groupId>
+    <artifactId>s3tbx</artifactId>
     <version>0.6.0</version>
-    <name>SUHET</name>
-    <description>Sentinel Exploitation Tools</description>
-    <url>https://github.com/bcdev/suhet</url>
+    <name>Sentinel-3 Toolbox</name>
+    <description>Tools for the Sentinel-3 Satellite</description>
+    <url>https://github.com/bcdev/s3tbx</url>
 
     <modules>
-        <module>suhet-bootstrap</module>
-        <module>beam-sentinel2-reader</module>
-        <module>beam-sentinel3-reader</module>
-        <module>atm-corr-processor</module>
-        <module>beam-sentinel2-reader-new</module>
+        <module>s3tbx-bootstrap</module>
+        <module>s3tbx-reader</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -132,12 +129,6 @@
             </dependency>
 
             <dependency>
-                <groupId>net.java.dev.jna</groupId>
-                <artifactId>jna</artifactId>
-                <version>3.4.0</version>
-            </dependency>
-
-            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.11</version>
@@ -176,7 +167,7 @@
                         <descriptor>src/main/assembly/project.xml</descriptor>
                         -->
                     </descriptors>
-                    <finalName>suhet</finalName>
+                    <finalName>s3tbx</finalName>
                 </configuration>
             </plugin>
         </plugins>
