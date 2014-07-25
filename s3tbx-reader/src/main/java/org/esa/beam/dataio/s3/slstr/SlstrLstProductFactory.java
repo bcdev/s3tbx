@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SlstrLstProductFactory extends SlstrProductFactory {
+public class SlstrLstProductFactory extends SlstrL2ProductFactory {
 
     public SlstrLstProductFactory(Sentinel3ProductReader productReader) {
         super(productReader);
@@ -31,17 +31,8 @@ public class SlstrLstProductFactory extends SlstrProductFactory {
     @Override
     protected List<String> getFileNames(Manifest manifest) {
         final List<String> fileNames = new ArrayList<String>();
-        fileNames.addAll(manifest.getFileNames("LSTdataSchema"));
-        fileNames.addAll(manifest.getFileNames("FRPdataSchema"));
 
-        fileNames.addAll(manifest.getFileNames("geodeticTiepointCoordinatesSchema"));
-        fileNames.addAll(manifest.getFileNames("cartesianTiepointCoordinatesSchema"));
-        fileNames.addAll(manifest.getFileNames("nadirSolarViewGeometrySchema"));
-        fileNames.addAll(manifest.getFileNames("meteorologicalDataSchema"));
-
-        fileNames.addAll(manifest.getFileNames("nadirFlagsSchema"));
-        fileNames.addAll(manifest.getFileNames("nadirIndicesSchema"));
-
+        fileNames.addAll(manifest.getFileNames(new String[0]));
         // TODO - time data are provided in a 64-bit variable, so we currently don't use them
 
         return fileNames;

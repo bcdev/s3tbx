@@ -110,12 +110,11 @@ public abstract class AbstractProductFactory implements ProductFactory {
         targetProduct.setFileLocation(getInputFile());
         targetProduct.setNumResolutionsMax(masterProduct.getNumResolutionsMax());
 
-        initialize(masterProduct);
-
         if (masterProduct.getGeoCoding() instanceof CrsGeoCoding) {
             ProductUtils.copyGeoCoding(masterProduct, targetProduct);
         }
         targetProduct.getMetadataRoot().addElement(manifest.getMetadata());
+        processProductSpecificMetadata(manifest.getMetadata().getElement("metadataSection"));
         for (final Product p : openProductList) {
             final MetadataElement productAttributes = new MetadataElement(p.getName());
             final MetadataElement datasetAttributes = new MetadataElement("Dataset_Attributes");
@@ -140,6 +139,9 @@ public abstract class AbstractProductFactory implements ProductFactory {
         setAutoGrouping(sourceProducts, targetProduct);
 
         return targetProduct;
+    }
+
+    protected void processProductSpecificMetadata(MetadataElement metadataElement) {
     }
 
     protected int getSceneRasterWidth(Product masterProduct) {
@@ -229,9 +231,6 @@ public abstract class AbstractProductFactory implements ProductFactory {
         targetProduct.setAutoGrouping(patternBuilder.toString());
     }
 
-    protected void initialize(Product masterProduct) {
-    }
-
     protected void addDataNodes(Product masterProduct, Product targetProduct) throws IOException {
         final int w = targetProduct.getSceneRasterWidth();
         final int h = targetProduct.getSceneRasterHeight();
@@ -299,7 +298,8 @@ public abstract class AbstractProductFactory implements ProductFactory {
             logger.log(Level.SEVERE, msg);
             throw new IOException(msg);
         }
-        final Product product = reader.readProductNodes(file, getSubsetDef(fileName));
+
+        final Product product = reader.readProductNodes(file, null);
         if (product == null) {
             final String msg = MessageFormat.format("Cannot read file ''{0}''.", fileName);
             logger.log(Level.SEVERE, msg);
@@ -311,10 +311,6 @@ public abstract class AbstractProductFactory implements ProductFactory {
         }
         openProductList.add(product);
         return product;
-    }
-
-    protected ProductSubsetDef getSubsetDef(String fileName) {
-        return null;
     }
 
     protected final File getInputFile() {
@@ -335,11 +331,7 @@ public abstract class AbstractProductFactory implements ProductFactory {
         final InputStream inputStream = new FileInputStream(file);
         try {
             final Document xmlDocument = createXmlDocument(inputStream);
-            if (xmlDocument.getDocumentElement().getTagName().contains("Earth_Explorer")) {
-                return EarthExplorerManifest.createManifest(xmlDocument);
-            } else {
-                return SafeManifest.createManifest(xmlDocument);
-            }
+            return XfduManifest.createManifest(xmlDocument);
         } finally {
             inputStream.close();
         }

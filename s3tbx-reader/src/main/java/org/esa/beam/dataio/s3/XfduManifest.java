@@ -1,24 +1,11 @@
-/*
- * Copyright (c) 2012. Brockmann Consult (info@brockmann-consult.de)
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation. This program is distributed in the hope it will
- * be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
- */
-
 package org.esa.beam.dataio.s3;
 
+import com.sun.org.apache.xerces.internal.dom.DeferredElementImpl;
 import org.esa.beam.dataio.util.XPathHelper;
 import org.esa.beam.framework.datamodel.MetadataAttribute;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.ProductData;
+import org.esa.beam.util.ArrayUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -30,22 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class encapsulating the manifest file of Sentinel-3 Synergy products.
- *
- * @author Olaf Danne
- * @author Ralf Quast
- * @since 1.0
+ * @author Tonio Fincke
  */
-class SafeManifest implements Manifest {
+public class XfduManifest implements Manifest {
 
     private final Document doc;
     private final XPathHelper xPathHelper;
 
     static Manifest createManifest(Document manifestDocument) {
-        return new SafeManifest(manifestDocument);
+        return new XfduManifest(manifestDocument);
     }
 
-    private SafeManifest(Document manifestDocument) {
+    private XfduManifest(Document manifestDocument) {
         doc = manifestDocument;
         xPathHelper = new XPathHelper(XPathFactory.newInstance().newXPath());
     }
@@ -69,15 +52,29 @@ class SafeManifest implements Manifest {
     public List<String> getFileNames(final String schema) {
         final List<String> fileNameList = new ArrayList<String>();
 
-        getFileNames("dataObjectSection/dataObject", schema, fileNameList);
-        getFileNames("metadataSection/metadataObject", schema, fileNameList);
+        getFileNames("dataObjectSection/dataObject", fileNameList);
+        getFileNames("metadataSection/metadataObject", fileNameList);
 
         return fileNameList;
     }
 
     @Override
     public List<String> getFileNames(String[] excluded) {
-        return null;
+        final ArrayList<String> fileNameList = new ArrayList<String>();
+        final NodeList nodeList = xPathHelper.getNodeList(
+                "/XFDU/dataObjectSection/dataObject", doc);
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            final Node item = nodeList.item(i);
+            String id = ((DeferredElementImpl)item).getAttribute("ID");
+            if (!ArrayUtils.isMemberOf(id, excluded)) {
+                final String fileName = xPathHelper.getString("./byteStream/fileLocation/@href", item);
+                if (!fileNameList.contains(fileName)) {
+                    fileNameList.add(fileName);
+                }
+            }
+        }
+
+        return fileNameList;
     }
 
     @Override
@@ -163,9 +160,9 @@ class SafeManifest implements Manifest {
         return false;
     }
 
-    private List<String> getFileNames(String objectPath, final String schema, List<String> fileNameList) {
+    private List<String> getFileNames(String objectPath, List<String> fileNameList) {
         final NodeList nodeList = xPathHelper.getNodeList(
-                "/XFDU/" + objectPath + "[@repID='" + schema + "']", doc);
+                "/XFDU/" + objectPath, doc);
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node item = nodeList.item(i);
             final String fileName = xPathHelper.getString("./byteStream/fileLocation/@href", item);
@@ -189,4 +186,5 @@ class SafeManifest implements Manifest {
             return null;
         }
     }
+
 }
