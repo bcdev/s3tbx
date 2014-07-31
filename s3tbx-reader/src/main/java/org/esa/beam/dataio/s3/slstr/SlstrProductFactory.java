@@ -32,6 +32,7 @@ import javax.media.jai.Interpolation;
 import javax.media.jai.JAI;
 import java.awt.RenderingHints;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.IOException;
 
 public abstract class SlstrProductFactory extends AbstractProductFactory {
@@ -220,4 +221,10 @@ public abstract class SlstrProductFactory extends AbstractProductFactory {
         return patternBuilder.toString();
     }
 
+    @Override
+    protected Product readProduct(String fileName) throws IOException {
+        final File file = new File(getInputFileParentDirectory(), fileName);
+        final SlstrNetcdfReader slstrNetcdfReader = new SlstrNetcdfReader(file.getAbsolutePath());
+        return slstrNetcdfReader.readProduct();
+    }
 }
