@@ -32,6 +32,9 @@ import java.util.List;
  */
 class SlstrNetcdfReader {
 
+    //todo make specific solution for dimension "channel" more generic?
+    //todo work better with "channel" metadata - after it is no longer experimental
+
     private static final String product_type = "product_type";
     private static final String flag_values = "flag_values";
     private static final String flag_masks = "flag_masks";
@@ -65,13 +68,25 @@ class SlstrNetcdfReader {
     }
 
     private RenderedImage createSourceImage(Band band) {
-        final Variable variable = netcdfFile.findVariable(band.getName());
         final int bufferType = ImageManager.getDataBufferType(band.getDataType());
         final int sourceWidth = band.getSceneRasterWidth();
         final int sourceHeight = band.getSceneRasterHeight();
         final java.awt.Dimension tileSize = band.getProduct().getPreferredTileSize();
+        final String bandName = band.getName();
+        String variableName = bandName;
+        Variable variable;
+        int dimensionIndex = -1;
+        String dimensionName = "";
+        if(bandName.contains("_channel")) {
+            variableName = bandName.substring(0, variableName.indexOf("_channel"));
+            variable = netcdfFile.findVariable(variableName);
+            dimensionName = "channel";
+            dimensionIndex = Integer.parseInt(bandName.substring(bandName.length() - 1)) - 1;
+        } else {
+            variable = netcdfFile.findVariable(variableName);
+        }
         return new SlstrVariableOpImage(variable, bufferType, sourceWidth, sourceHeight, tileSize,
-                                        ResolutionLevel.MAXRES);
+                                        ResolutionLevel.MAXRES, dimensionName, dimensionIndex);
     }
 
     private void addGlobalMetadata(Product product) {
@@ -94,37 +109,48 @@ class SlstrNetcdfReader {
         for (final Variable variable : variables) {
             if (variable.findDimensionIndex("rows") != -1 && variable.findDimensionIndex("columns") != -1) {
                 final String variableName = variable.getFullName();
-                int type = DataTypeUtils.getEquivalentProductDataType(variable.getDataType(), false, false);
-                final Band band = product.addBand(variableName, type);
-                band.setDescription(variable.getDescription());
-                final Attribute fillValueAttribute = variable.findAttribute(fillValue);
-                if (fillValueAttribute != null) {
-                    band.setNoDataValue(fillValueAttribute.getNumericValue().doubleValue());
-                    band.setNoDataValueUsed(true);
-                }
-                final Attribute flagValuesAttribute = variable.findAttribute(flag_values);
-                final Attribute flagMasksAttribute = variable.findAttribute(flag_masks);
-                final Attribute flagMeaningsAttribute = variable.findAttribute(flag_meanings);
-                if (flagValuesAttribute != null && flagMasksAttribute != null) {
-                    final FlagCoding flagCoding = getFlagCoding(product, variableName, flagMeaningsAttribute, flagMasksAttribute);
-                    band.setSampleCoding(flagCoding);
-                    final String indexCodingName = variableName + "_index";
-                    final IndexCoding indexCoding = getIndexCoding(product, indexCodingName,
-                                                                   flagMeaningsAttribute, flagValuesAttribute);
-                    final VirtualBand virtualBand = new VirtualBand(indexCodingName, band.getDataType(),
-                                                                    band.getSceneRasterWidth(), band.getSceneRasterHeight(),
-                                                                    band.getName());
-                    virtualBand.setSampleCoding(indexCoding);
-                    product.addBand(virtualBand);
-                } else if (flagValuesAttribute != null) {
-                    final IndexCoding indexCoding = getIndexCoding(product, variableName, flagMeaningsAttribute, flagValuesAttribute);
-                    band.setSampleCoding(indexCoding);
-                } else if (flagMasksAttribute != null) {
-                    final FlagCoding flagCoding = getFlagCoding(product, variableName, flagMeaningsAttribute, flagMasksAttribute);
-                    band.setSampleCoding(flagCoding);
+                if(variable.findDimensionIndex("channel") != - 1) {
+                    final Dimension channelDimension = variable.getDimension(variable.findDimensionIndex("channel"));
+                    for(int i = 0; i < channelDimension.getLength(); i++) {
+                        createBand(product, variable, variableName + "_channel" + (i + 1));
+                    }
+                } else {
+                    createBand(product, variable, variableName);
                 }
             }
             addVariableMetadata(variable, product);
+        }
+    }
+
+    private void createBand(Product product, Variable variable, String variableName) {
+        int type = DataTypeUtils.getEquivalentProductDataType(variable.getDataType(), false, false);
+        final Band band = product.addBand(variableName, type);
+        band.setDescription(variable.getDescription());
+        final Attribute fillValueAttribute = variable.findAttribute(fillValue);
+        if (fillValueAttribute != null) {
+            band.setNoDataValue(fillValueAttribute.getNumericValue().doubleValue());
+            band.setNoDataValueUsed(true);
+        }
+        final Attribute flagValuesAttribute = variable.findAttribute(flag_values);
+        final Attribute flagMasksAttribute = variable.findAttribute(flag_masks);
+        final Attribute flagMeaningsAttribute = variable.findAttribute(flag_meanings);
+        if (flagValuesAttribute != null && flagMasksAttribute != null) {
+            final FlagCoding flagCoding = getFlagCoding(product, variableName, flagMeaningsAttribute, flagMasksAttribute);
+            band.setSampleCoding(flagCoding);
+            final String indexCodingName = variableName + "_index";
+            final IndexCoding indexCoding = getIndexCoding(product, indexCodingName,
+                                                           flagMeaningsAttribute, flagValuesAttribute);
+            final VirtualBand virtualBand = new VirtualBand(indexCodingName, band.getDataType(),
+                                                            band.getSceneRasterWidth(), band.getSceneRasterHeight(),
+                                                            band.getName());
+            virtualBand.setSampleCoding(indexCoding);
+            product.addBand(virtualBand);
+        } else if (flagValuesAttribute != null) {
+            final IndexCoding indexCoding = getIndexCoding(product, variableName, flagMeaningsAttribute, flagValuesAttribute);
+            band.setSampleCoding(indexCoding);
+        } else if (flagMasksAttribute != null) {
+            final FlagCoding flagCoding = getFlagCoding(product, variableName, flagMeaningsAttribute, flagMasksAttribute);
+            band.setSampleCoding(flagCoding);
         }
     }
 

@@ -21,7 +21,7 @@
 
     <groupId>org.esa.s3tbx</groupId>
     <artifactId>s3tbx</artifactId>
-    <version>0.6.1-SNAPSHOT</version>
+    <version>0.6.0</version>
     <name>Sentinel-3 Toolbox</name>
     <description>Tools for the Sentinel-3 Satellite</description>
     <url>https://github.com/bcdev/s3tbx</url>
@@ -33,9 +33,9 @@
 
     <packaging>pom</packaging>
 
-    <properties>
-        <beamVersion>5.0.1</beamVersion>
-    </properties>
+    <!--<properties>-->
+        <!--<beamVersion>5.0.1</beamVersion>-->
+    <!--</properties>-->
 
     <repositories>
          <repository>
@@ -101,31 +101,36 @@
             <dependency>
                 <groupId>org.esa.beam</groupId>
                 <artifactId>beam-core</artifactId>
-                <version>${beamVersion}</version>
+                <!--<version>5.0.3-SNAPSHOT</version>-->
+                <version>${beam.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.esa.beam</groupId>
                 <artifactId>beam-ui</artifactId>
-                <version>${beamVersion}</version>
+                <!--<version>5.0.1</version>-->
+                <version>${beam.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.esa.beam</groupId>
                 <artifactId>beam-gpf</artifactId>
-                <version>${beamVersion}</version>
+                <!--<version>5.0.1</version>-->
+                <version>${beam.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.esa.beam</groupId>
                 <artifactId>beam-visat-rcp</artifactId>
-                <version>${beamVersion}</version>
+                <!--<version>5.0.2-SNAPSHOT</version>-->
+                <version>${beam.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.esa.beam</groupId>
                 <artifactId>beam-netcdf</artifactId>
-                <version>${beamVersion}</version>
+                <!--<version>5.0.2-SNAPSHOT</version>-->
+                <version>${beam.version}</version>
             </dependency>
 
             <dependency>

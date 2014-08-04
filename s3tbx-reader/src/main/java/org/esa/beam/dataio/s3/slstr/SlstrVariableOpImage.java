@@ -3,7 +3,6 @@ package org.esa.beam.dataio.s3.slstr;
 import org.esa.beam.jai.ResolutionLevel;
 import org.esa.beam.jai.SingleBandedOpImage;
 import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.VariableIF;
 
@@ -11,7 +10,6 @@ import javax.media.jai.PlanarImage;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.WritableRaster;
-import java.io.IOException;
 
 /**
  * Identical to ImageVariableOpImage in sst-cci-toolbox
@@ -22,11 +20,15 @@ import java.io.IOException;
 class SlstrVariableOpImage extends SingleBandedOpImage {
 
     private final VariableIF variable;
+    private final int dimensionIndex;
+    private final String dimensionName;
 
     SlstrVariableOpImage(VariableIF variable, int dataBufferType, int sourceWidth, int sourceHeight,
-                                   Dimension tileSize, ResolutionLevel level) {
+                         Dimension tileSize, ResolutionLevel level, String dimensionName, int dimensionIndex) {
         super(dataBufferType, sourceWidth, sourceHeight, tileSize, null, level);
         this.variable = variable;
+        this.dimensionName = dimensionName;
+        this.dimensionIndex = dimensionIndex;
     }
 
     @Override
@@ -52,6 +54,12 @@ class SlstrVariableOpImage extends SingleBandedOpImage {
         final double scale = getScale();
         stride[indexX] = (int) scale;
         stride[indexY] = (int) scale;
+
+        if(dimensionIndex >= 0) {
+            final int dimensionIndex1 = variable.findDimensionIndex(dimensionName);
+            origin[dimensionIndex1] = dimensionIndex;
+            stride[dimensionIndex1] = (int) scale;
+        }
 
         Array array;
         synchronized (variable.getParentGroup().getNetcdfFile()) {
