@@ -67,7 +67,7 @@ class SlstrNetcdfReader {
         return product;
     }
 
-    private RenderedImage createSourceImage(Band band) {
+    protected RenderedImage createSourceImage(Band band) {
         final int bufferType = ImageManager.getDataBufferType(band.getDataType());
         final int sourceWidth = band.getSceneRasterWidth();
         final int sourceHeight = band.getSceneRasterHeight();
@@ -104,7 +104,7 @@ class SlstrNetcdfReader {
         product.getMetadataRoot().addElement(variableAttributesElement);
     }
 
-    private void addBands(Product product) {
+    protected void addBands(Product product) {
         final List<Variable> variables = netcdfFile.getVariables();
         for (final Variable variable : variables) {
             if (variable.findDimensionIndex("rows") != -1 && variable.findDimensionIndex("columns") != -1) {
@@ -122,7 +122,7 @@ class SlstrNetcdfReader {
         }
     }
 
-    private void createBand(Product product, Variable variable, String variableName) {
+    protected void createBand(Product product, Variable variable, String variableName) {
         int type = DataTypeUtils.getEquivalentProductDataType(variable.getDataType(), false, false);
         final Band band = product.addBand(variableName, type);
         band.setDescription(variable.getDescription());
@@ -220,7 +220,7 @@ class SlstrNetcdfReader {
         return flagName.replaceAll("\\W+", "_");
     }
 
-    private void addVariableMetadata(Variable variable, Product product) {
+    protected void addVariableMetadata(Variable variable, Product product) {
         final MetadataElement variableElement = new MetadataElement(variable.getFullName());
         final List<Attribute> attributes = variable.getAttributes();
         for (Attribute attribute : attributes) {

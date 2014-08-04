@@ -224,7 +224,7 @@ public abstract class SlstrProductFactory extends AbstractProductFactory {
     @Override
     protected Product readProduct(String fileName) throws IOException {
         final File file = new File(getInputFileParentDirectory(), fileName);
-        final SlstrNetcdfReader slstrNetcdfReader = new SlstrNetcdfReader(file.getAbsolutePath());
+        final SlstrNetcdfReader slstrNetcdfReader = SlstrNetcdfReaderFactory.createSlstrNetcdfReader(file);
         return slstrNetcdfReader.readProduct();
     }
 }
