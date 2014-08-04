@@ -313,4 +313,8 @@ class SlstrNetcdfReader {
         return productType;
     }
 
+    protected NetcdfFile getNetcdfFile() {
+        return netcdfFile;
+    }
+
 }

@@ -9,11 +9,13 @@ import java.io.IOException;
 public class SlstrNetcdfReaderFactory {
 
     static SlstrNetcdfReader createSlstrNetcdfReader(File file) throws IOException {
-        if(file.getName().equals("FRP_in.nc")) {
+        final String fileName = file.getName();
+        if(fileName.equals("FRP_in.nc")) {
             return new SlstrFRPReader(file.getAbsolutePath());
-        } else {
-            return new SlstrNetcdfReader(file.getAbsolutePath());
+        } else if(fileName.equals("LST_ancillary_ds.nc")) {
+            return new SlstrLSTAncillaryDsReader(file.getAbsolutePath());
         }
+        return new SlstrNetcdfReader(file.getAbsolutePath());
     }
 
 }
