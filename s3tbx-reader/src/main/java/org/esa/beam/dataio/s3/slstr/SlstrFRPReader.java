@@ -1,36 +1,15 @@
 package org.esa.beam.dataio.s3.slstr;
 
-import org.esa.beam.dataio.netcdf.util.Constants;
-import org.esa.beam.dataio.netcdf.util.DataTypeUtils;
 import org.esa.beam.dataio.netcdf.util.NetcdfFileOpener;
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.FlagCoding;
-import org.esa.beam.framework.datamodel.IndexCoding;
-import org.esa.beam.framework.datamodel.MetadataAttribute;
-import org.esa.beam.framework.datamodel.MetadataElement;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductData;
-import org.esa.beam.framework.datamodel.SampleCoding;
-import org.esa.beam.framework.datamodel.VirtualBand;
-import org.esa.beam.jai.ImageManager;
-import org.esa.beam.jai.ResolutionLevel;
-import org.esa.beam.util.io.FileUtils;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
+import org.esa.beam.dataio.s3.util.S3NetcdfReader;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
 
-import java.awt.image.RenderedImage;
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author Tonio Fincke
  */
-class SlstrFRPReader extends SlstrNetcdfReader {
+class SlstrFRPReader extends S3NetcdfReader {
 
     private final NetcdfFile netcdfFile;
 

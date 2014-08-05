@@ -18,6 +18,7 @@ import com.bc.ceres.glevel.MultiLevelImage;
 import org.esa.beam.dataio.s3.AbstractProductFactory;
 import org.esa.beam.dataio.s3.Sentinel3ProductReader;
 import org.esa.beam.dataio.s3.SourceImageScaler;
+import org.esa.beam.dataio.s3.util.S3NetcdfReader;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.Product;
@@ -224,7 +225,7 @@ public abstract class SlstrProductFactory extends AbstractProductFactory {
     @Override
     protected Product readProduct(String fileName) throws IOException {
         final File file = new File(getInputFileParentDirectory(), fileName);
-        final SlstrNetcdfReader slstrNetcdfReader = SlstrNetcdfReaderFactory.createSlstrNetcdfReader(file);
+        final S3NetcdfReader slstrNetcdfReader = SlstrNetcdfReaderFactory.createSlstrNetcdfReader(file);
         return slstrNetcdfReader.readProduct();
     }
 }

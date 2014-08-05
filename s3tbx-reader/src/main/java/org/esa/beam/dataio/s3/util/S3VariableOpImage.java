@@ -1,4 +1,4 @@
-package org.esa.beam.dataio.s3.slstr;
+package org.esa.beam.dataio.s3.util;
 
 import org.esa.beam.jai.ResolutionLevel;
 import org.esa.beam.jai.SingleBandedOpImage;
@@ -12,18 +12,15 @@ import java.awt.Rectangle;
 import java.awt.image.WritableRaster;
 
 /**
- * Identical to ImageVariableOpImage in sst-cci-toolbox
- *
  * @author Tonio Fincke
- * @author Ralf Quast
  */
-class SlstrVariableOpImage extends SingleBandedOpImage {
+public class S3VariableOpImage extends SingleBandedOpImage {
 
     private final VariableIF variable;
     private final int dimensionIndex;
     private final String dimensionName;
 
-    SlstrVariableOpImage(VariableIF variable, int dataBufferType, int sourceWidth, int sourceHeight,
+    public S3VariableOpImage(VariableIF variable, int dataBufferType, int sourceWidth, int sourceHeight,
                          Dimension tileSize, ResolutionLevel level, String dimensionName, int dimensionIndex) {
         super(dataBufferType, sourceWidth, sourceHeight, tileSize, null, level);
         this.variable = variable;
@@ -113,11 +110,11 @@ class SlstrVariableOpImage extends SingleBandedOpImage {
         return array.getStorage();
     }
 
-    protected final int getIndexX(int rank) {
+    protected int getIndexX(int rank) {
         return rank - 1;
     }
 
-    protected final int getIndexY(int rank) {
+    protected int getIndexY(int rank) {
         return rank - 2;
     }
 

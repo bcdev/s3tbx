@@ -1,5 +1,6 @@
 package org.esa.beam.dataio.s3.slstr;
 
+import org.esa.beam.dataio.s3.util.S3NetcdfReader;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.Product;
 import ucar.ma2.Array;
@@ -12,7 +13,7 @@ import java.io.IOException;
 /**
  * @author Tonio Fincke
  */
-public class SlstrLSTAncillaryDsReader extends SlstrNetcdfReader {
+public class SlstrLSTAncillaryDsReader extends S3NetcdfReader {
 
     SlstrLSTAncillaryDsReader(String pathToFile) throws IOException {
         super(pathToFile);

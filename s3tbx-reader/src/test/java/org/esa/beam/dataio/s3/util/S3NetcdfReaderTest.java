@@ -1,12 +1,8 @@
-package org.esa.beam.dataio.s3.slstr;
+package org.esa.beam.dataio.s3.util;
 
-import junit.framework.TestCase;
-import org.esa.beam.dataio.netcdf.util.NetcdfFileOpener;
-import org.esa.beam.framework.dataio.ProductIO;
 import org.esa.beam.framework.datamodel.Product;
 import org.junit.Before;
 import org.junit.Test;
-import ucar.nc2.NetcdfFile;
 
 import java.io.IOException;
 
@@ -16,14 +12,14 @@ import static junit.framework.TestCase.assertNotNull;
 /**
  * @author Tonio Fincke
  */
-public class SlstrNetcdfReaderTest {
+public class S3NetcdfReaderTest {
 
-    private SlstrNetcdfReader reader;
+    private S3NetcdfReader reader;
 
     @Before
     public void setUp() throws IOException {
-        String netDCFFilePath = SlstrNetcdfReaderTest.class.getResource("../../s3/FRP_in.nc").getPath();
-        reader = new SlstrNetcdfReader(netDCFFilePath);
+        String netDCFFilePath = S3NetcdfReader.class.getResource("../../s3/FRP_in.nc").getPath();
+        reader = new S3NetcdfReader(netDCFFilePath);
     }
 
     @Test
@@ -53,7 +49,5 @@ public class SlstrNetcdfReaderTest {
         assertEquals(1568, product.getSceneRasterWidth());
         assertEquals(266, product.getSceneRasterHeight());
     }
-
-
 
 }

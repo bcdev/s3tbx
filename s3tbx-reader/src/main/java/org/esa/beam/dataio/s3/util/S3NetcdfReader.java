@@ -1,4 +1,4 @@
-package org.esa.beam.dataio.s3.slstr;
+package org.esa.beam.dataio.s3.util;
 
 import org.esa.beam.dataio.netcdf.util.Constants;
 import org.esa.beam.dataio.netcdf.util.DataTypeUtils;
@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * @author Tonio Fincke
  */
-class SlstrNetcdfReader {
+public class S3NetcdfReader {
 
     //todo make specific solution for dimension "channel" more generic?
     //todo work better with "channel" metadata - after it is no longer experimental
@@ -43,7 +43,7 @@ class SlstrNetcdfReader {
     private final NetcdfFile netcdfFile;
     private final String pathToFile;
 
-    SlstrNetcdfReader(String pathToFile) throws IOException {
+    public S3NetcdfReader(String pathToFile) throws IOException {
         netcdfFile = NetcdfFileOpener.open(pathToFile);
         this.pathToFile = pathToFile;
     }
@@ -85,7 +85,7 @@ class SlstrNetcdfReader {
         } else {
             variable = netcdfFile.findVariable(variableName);
         }
-        return new SlstrVariableOpImage(variable, bufferType, sourceWidth, sourceHeight, tileSize,
+        return new S3VariableOpImage(variable, bufferType, sourceWidth, sourceHeight, tileSize,
                                         ResolutionLevel.MAXRES, dimensionName, dimensionIndex);
     }
 
@@ -233,7 +233,7 @@ class SlstrNetcdfReader {
         product.getMetadataRoot().getElement("Variable_Attributes").addElement(variableElement);
     }
 
-    private ProductData getAttributeData(Attribute attribute, int type) {
+    protected ProductData getAttributeData(Attribute attribute, int type) {
         final Array attributeValues = attribute.getValues();
         ProductData productData = null;
         switch (type) {
@@ -278,7 +278,7 @@ class SlstrNetcdfReader {
 //        return res;
 //    }
 
-    int getWidth() {
+    protected int getWidth() {
         final Dimension widthDimension = netcdfFile.findDimension("columns");
         if (widthDimension != null) {
             return widthDimension.getLength();
@@ -286,7 +286,7 @@ class SlstrNetcdfReader {
         return 0;
     }
 
-    int getHeight() {
+    protected int getHeight() {
         final Dimension heightDimension = netcdfFile.findDimension("rows");
         if (heightDimension != null) {
             return heightDimension.getLength();
